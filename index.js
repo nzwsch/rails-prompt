@@ -1,5 +1,6 @@
 const util = require("util");
 const execFile = util.promisify(require("child_process").execFile);
+const { spawn } = require("child_process");
 const { prompt } = require("enquirer");
 
 (async () => {
@@ -59,8 +60,8 @@ const { prompt } = require("enquirer");
     default:
       webpack = `--webpack=${response.webpack}`;
   }
-  const { stdout } = await execFile("echo", ["-e", "rails", "new", APP_PATH, database, skips, webpack]);
-  console.log(stdout);
+  const { stdout } = await execFile("echo", ["rails", "new", APP_PATH, database, skips, webpack]);
+  process.stdout.write(stdout);
   const toggle = await prompt({
     type: "toggle",
     message: "Want to run?",
@@ -68,7 +69,8 @@ const { prompt } = require("enquirer");
     disabled: "Nope",
   });
   if (toggle) {
-    const { stdout } = await execFile("rails", ["new", APP_PATH, database, skips, webpack]);
-    console.log(stdout);
+    const rails = spawn("rails", ["new", APP_PATH, database, skips, webpack]);
+    rails.stdout.on("data", (data) => process.stdout.write(data.toString()));
+    rails.stderr.on("data", (data) => process.stderr.write(data.toString()));
   }
 })();
