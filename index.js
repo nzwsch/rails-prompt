@@ -45,6 +45,7 @@ const { prompt } = require("enquirer");
       choices: ["skip-webpack", "webpacker", "react", "vue", "angular", "elm", "stimulus"],
     },
   ]);
+  const APP_PATH = response.APP_PATH;
   const database = `--database=${response.database}`;
   const skips = response.skips.join(" ");
   let webpack;
@@ -58,6 +59,16 @@ const { prompt } = require("enquirer");
     default:
       webpack = `--webpack=${response.webpack}`;
   }
-  const { stdout } = await execFile("echo", ["-e", "rails", "new", response.APP_PATH, database, skips, webpack]);
+  const { stdout } = await execFile("echo", ["-e", "rails", "new", APP_PATH, database, skips, webpack]);
   console.log(stdout);
+  const toggle = await prompt({
+    type: "toggle",
+    message: "Want to run?",
+    enabled: "Yep",
+    disabled: "Nope",
+  });
+  if (toggle) {
+    const { stdout } = await execFile("rails", ["new", APP_PATH, database, skips, webpack]);
+    console.log(stdout);
+  }
 })();
