@@ -1,61 +1,63 @@
+const util = require("util");
+const execFile = util.promisify(require("child_process").execFile);
 const { prompt } = require("enquirer");
 
 (async () => {
   const response = await prompt([
     {
+      type: "input",
+      name: "APP_PATH",
+      message: "Type app path",
+    },
+    {
       type: "select",
       name: "database",
       message: "Select database",
-      choices: [
-        "postgresql",
-        "mysql",
-        "sqlite3",
-        "oracle",
-        "sqlserver",
-        "jdbcmysql",
-        "jdbcsqlite3",
-        "jdbcpostgresql",
-        "jdbc",
-      ],
+      choices: ["postgresql", "mysql", "sqlite3", "oracle", "sqlserver", "jdbcmysql", "jdbcsqlite3", "jdbcpostgresql", "jdbc"],
     },
     {
       type: "multiselect",
       name: "skips",
       message: "Select skips",
       choices: [
-        { name: "action-mailer", value: "--skip-action-mailer" },
-        { name: "action-mailbox", value: "--skip-action-mailbox" },
-        { name: "action-text", value: "--skip-action-text" },
-        { name: "active-record", value: "--skip-active-record" },
-        { name: "active-job", value: "--skip-active-job" },
-        { name: "active-storage", value: "--skip-active-storage" },
-        { name: "action-cable", value: "--skip-action-cable" },
-        { name: "sprockets", value: "--skip-sprockets" },
-        { name: "spring", value: "--skip-spring" },
-        { name: "listen", value: "--skip-listen" },
-        { name: "javascript", value: "--skip-javascript" },
-        { name: "turbolinks", value: "--skip-turbolinks" },
-        { name: "jbuilder", value: "--skip-jbuilder" },
-        { name: "test", value: "--skip-test" },
-        { name: "system-test", value: "--skip-system-test" },
-        { name: "bootsnap", value: "--skip-bootsnap" },
+        "--skip-action-mailer",
+        "--skip-action-mailbox",
+        "--skip-action-text",
+        "--skip-active-record",
+        "--skip-active-job",
+        "--skip-active-storage",
+        "--skip-action-cable",
+        "--skip-sprockets",
+        "--skip-spring",
+        "--skip-listen",
+        "--skip-javascript",
+        "--skip-turbolinks",
+        "--skip-jbuilder",
+        "--skip-test",
+        "--skip-system-test",
+        "--skip-bootsnap",
       ],
     },
     {
       type: "select",
       name: "webpack",
       message: "Select webpack",
-      choices: [
-        "skip-webpack",
-        "webpacker",
-        "react",
-        "vue",
-        "angular",
-        "elm",
-        "stimulus",
-      ],
+      choices: ["skip-webpack", "webpacker", "react", "vue", "angular", "elm", "stimulus"],
     },
   ]);
-
-  console.log(response);
+  const database = `--database=${response.database}`;
+  const skips = response.skips.join(" ");
+  let webpack;
+  switch (response.webpack) {
+    case "skip-webpack":
+      webpack = "--skip-webpack-install";
+      break;
+    case "webpacker":
+      webpack = "--webpacker";
+      break;
+    default:
+      webpack = `--webpack=${response.webpack}`;
+  }
+  const { stdout } = await execFile("echo", ["-e", "rails", "new", response.APP_PATH, database, skips, webpack]);
+  console.log(stdout);
 })();
