@@ -32,7 +32,7 @@ const { prompt, Toggle } = require("enquirer");
       type: "multiselect",
       name: "skips",
       message: "Select skips",
-      initial: [0, 1, 2, 4, 5, 6, 8, 11, 12, 14, 15],
+      initial: [0, 1, 2, 4, 5, 6, 8, 10, 11, 12, 14, 15],
       choices: [
         { name: "--skip-action-mailer", message: "action-mailer" },
         { name: "--skip-action-mailbox", message: "action-mailbox" },
@@ -44,7 +44,7 @@ const { prompt, Toggle } = require("enquirer");
         { name: "--skip-sprockets", message: "sprockets" },
         { name: "--skip-spring", message: "spring" },
         { name: "--skip-listen", message: "listen" },
-        { name: "--skip-javascript", message: "javascript" },
+        { name: "--skip-javascript", message: "javascript (webpacker)" },
         { name: "--skip-turbolinks", message: "turbolinks" },
         { name: "--skip-jbuilder", message: "jbuilder" },
         { name: "--skip-test", message: "test" },
@@ -57,7 +57,7 @@ const { prompt, Toggle } = require("enquirer");
       name: "webpack",
       message: "Select webpack",
       choices: [
-        { name: "--skip-webpack-install", message: "skip webpack install" },
+        { name: "--skip-webpack-install", message: "skip webpack install" }, // https://github.com/rails/rails/issues/35484
         { name: "--webpacker", message: "webpacker" },
         { name: "--webpack=react", message: "react" },
         { name: "--webpack=vue", message: "vue" },
