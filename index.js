@@ -48,7 +48,7 @@ const { prompt } = require("enquirer");
   ]);
   const APP_PATH = response.APP_PATH;
   const database = `--database=${response.database}`;
-  const skips = response.skips.join(" ");
+  const skips = response.skips;
   let webpack;
   switch (response.webpack) {
     case "skip-webpack":
@@ -60,7 +60,7 @@ const { prompt } = require("enquirer");
     default:
       webpack = `--webpack=${response.webpack}`;
   }
-  const { stdout } = await execFile("echo", ["rails", "new", APP_PATH, database, skips, webpack]);
+  const { stdout } = await execFile("echo", ["rails", "new", APP_PATH, database, ...skips, webpack]);
   process.stdout.write(stdout);
   const toggle = await prompt({
     type: "toggle",
@@ -69,7 +69,7 @@ const { prompt } = require("enquirer");
     disabled: "Nope",
   });
   if (toggle) {
-    const rails = spawn("rails", ["new", APP_PATH, database, skips, webpack]);
+    const rails = spawn("rails", ["new", APP_PATH, database, ...skips, webpack]);
     rails.stdout.on("data", (data) => process.stdout.write(data.toString()));
     rails.stderr.on("data", (data) => process.stderr.write(data.toString()));
   }
